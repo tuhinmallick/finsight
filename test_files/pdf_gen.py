@@ -42,25 +42,18 @@ sub_centered_style = ParagraphStyle(
 )
 
 def cover_page(company_name):
-    flowables = []
-    
     # Title
     title = "FinSight"
     para_title = Paragraph(title, centered_style)
-    flowables.append(para_title)
-    
+    flowables = [para_title]
     # Subtitle
     subtitle = "Financial Insights for<br/>"
     para_subtitle = Paragraph(subtitle, sub_centered_style)
     flowables.append(para_subtitle)
 
-    subtitle2 = "{} {}".format(company_name, "2022")
+    subtitle2 = f"{company_name} 2022"
     para_subtitle2 = Paragraph(subtitle2, sub_centered_style)
-    flowables.append(para_subtitle2)
-    
-    # Add a page break after the cover page
-    flowables.append(PageBreak())
-    
+    flowables.extend((para_subtitle2, PageBreak()))
     return flowables
 
 from reportlab.lib.styles import ParagraphStyle
@@ -100,20 +93,17 @@ sub_header_style = ParagraphStyle(
 )
 
 def pdf_company_overview(data):
-    flowables = []
-    
     # Section Title
     title = "Company Overview"
     para_title = Paragraph(title, header_style)
-    flowables.append(para_title)
-    
+    flowables = [para_title]
     # Company Name
     # data = json.loads(data)
     company_name = data.get("Name")
     print(company_name)
-    para_name = Paragraph("<b> {} </b>".format(company_name), sub_header_style)
+    para_name = Paragraph(f"<b> {company_name} </b>", sub_header_style)
     flowables.append(para_name)
-    
+
     # Other details
     details = [
         ("Symbol:", data.get("Symbol")),
@@ -128,58 +118,53 @@ def pdf_company_overview(data):
         ("Latest Quarter:", data.get("Latest_quarter")),
         ("Market Capitalization:", data.get("Market_cap"))
     ]
-    
+
     for label, value in details:
-        para_label = Paragraph("<b>{}</b> {}".format(label, value), data_style)
+        para_label = Paragraph(f"<b>{label}</b> {value}", data_style)
         flowables.append(para_label)
-    
+
     return flowables
 
 
 def pdf_income_statement(metrics, insights):
-    flowables = []
-    
     # Section Title
     title = "INCOME STATEMENT"
     para_title = Paragraph(title, header_style)
-    flowables.append(para_title)
-
-    
-    # Metrics
-    flowables.append(Paragraph("<b>METRICS</b>", sub_header_style))
+    flowables = [para_title, Paragraph("<b>METRICS</b>", sub_header_style)]
     for label, value in metrics.items():
-        metric_text = "<b>{}</b>: {}".format(label.replace("_", " ").title(), round_numeric(value))
+        metric_text = (
+            f'<b>{label.replace("_", " ").title()}</b>: {round_numeric(value)}'
+        )
         flowables.append(Paragraph(metric_text, data_style))
-    
-    # Insights
-    flowables.append(Paragraph("<b>INSIGHTS</b>", sub_header_style))
-    flowables.append(Paragraph("Revenue Health", sub_section_header_style))
-    flowables.append(Paragraph(insights.revenue_health, data_style))
-    flowables.append(Paragraph("Operational Efficiency", sub_section_header_style))
-    flowables.append(Paragraph(insights.operational_efficiency, data_style))
-    flowables.append(Paragraph("R&D Focus", sub_section_header_style))
-    flowables.append(Paragraph(insights.r_and_d_focus, data_style))
-    flowables.append(Paragraph("Debt Management", sub_section_header_style))
-    flowables.append(Paragraph(insights.debt_management, data_style))
-    flowables.append(Paragraph("Profit Retention", sub_section_header_style))
-    flowables.append(Paragraph(insights.profit_retention, data_style))
-    
+
+    flowables.extend(
+        (
+            Paragraph("<b>INSIGHTS</b>", sub_header_style),
+            Paragraph("Revenue Health", sub_section_header_style),
+            Paragraph(insights.revenue_health, data_style),
+            Paragraph("Operational Efficiency", sub_section_header_style),
+            Paragraph(insights.operational_efficiency, data_style),
+            Paragraph("R&D Focus", sub_section_header_style),
+            Paragraph(insights.r_and_d_focus, data_style),
+            Paragraph("Debt Management", sub_section_header_style),
+            Paragraph(insights.debt_management, data_style),
+            Paragraph("Profit Retention", sub_section_header_style),
+            Paragraph(insights.profit_retention, data_style),
+        )
+    )
     return flowables
 
 def pdf_balance_sheet(metrics, insights):
-    flowables = []
-    
     # Section Title
     title = "BALANCE SHEET"
     para_title = Paragraph(title, header_style)
-    flowables.append(para_title)
-
-    # Metrics
-    flowables.append(Paragraph("<b>METRICS</b>", sub_header_style))
+    flowables = [para_title, Paragraph("<b>METRICS</b>", sub_header_style)]
     for label, value in metrics.items():
-        metric_text = "<b>{}</b>: {}".format(label.replace("_", " ").title(), round_numeric(value))
+        metric_text = (
+            f'<b>{label.replace("_", " ").title()}</b>: {round_numeric(value)}'
+        )
         flowables.append(Paragraph(metric_text, data_style))
-    
+
     # Insights
     flowables.append(Paragraph("<b>INSIGHTS</b>", sub_header_style))
     insight_sections = [
@@ -189,24 +174,25 @@ def pdf_balance_sheet(metrics, insights):
         ("Inventory Management", insights.inventory_management),
         ("Overall Solvency", insights.overall_solvency)
     ]
-    
-    for section_title, insight_text in insight_sections:
-        flowables.append(Paragraph(section_title, sub_section_header_style))
-        flowables.append(Paragraph(insight_text, data_style))
 
+    for section_title, insight_text in insight_sections:
+        flowables.extend(
+            (
+                Paragraph(section_title, sub_section_header_style),
+                Paragraph(insight_text, data_style),
+            )
+        )
     return flowables
 
 def pdf_cash_flow(metrics, insights):
-    flowables = []
-    
     # Section Title
     title = "CASH FLOW"
     para_title = Paragraph(title, header_style)
-    flowables.append(para_title)
-
-    flowables.append(Paragraph("<b>METRICS</b>", sub_header_style))
+    flowables = [para_title, Paragraph("<b>METRICS</b>", sub_header_style)]
     for label, value in metrics.items():
-        metric_text = "<b>{}</b>: {}".format(label.replace("_", " ").title(), round_numeric(value))
+        metric_text = (
+            f'<b>{label.replace("_", " ").title()}</b>: {round_numeric(value)}'
+        )
         flowables.append(Paragraph(metric_text, data_style))
 
     # Insights
@@ -218,22 +204,21 @@ def pdf_cash_flow(metrics, insights):
         ("Dividend Sustainability", insights.dividend_sustainability),
         ("Debt Service Capability", insights.debt_service_capability)
     ]
-    
+
     for section_title, insight_text in insight_sections:
-        flowables.append(Paragraph(section_title, sub_section_header_style))
-        flowables.append(Paragraph(insight_text, data_style))
-    
+        flowables.extend(
+            (
+                Paragraph(section_title, sub_section_header_style),
+                Paragraph(insight_text, data_style),
+            )
+        )
     return flowables
 
 def pdf_news_sentiment(data):
-    flowables = []
-    
     # Section Title
     title = "NEWS SENTIMENT"
     para_title = Paragraph(title, header_style)
-    flowables.append(para_title)
-    flowables.append(Spacer(1, 12))
-
+    flowables = [para_title, Spacer(1, 12)]
     # News DataFrame to Table
     df = data['news']
     table_data = [df.columns.to_list()] + df.values.tolist()
@@ -251,18 +236,16 @@ def pdf_news_sentiment(data):
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
     ])
     table.setStyle(style)
-    flowables.append(table)
-    flowables.append(Spacer(1, 12))
-
+    flowables.extend((table, Spacer(1, 12)))
     # Mean Sentiment Score
     mean_sentiment_score_text = f"Mean Sentiment Score: {data['mean_sentiment_score']:.2f}"
-    flowables.append(Paragraph(mean_sentiment_score_text, data_style))
-    flowables.append(Spacer(1, 12))
-
+    flowables.extend(
+        (Paragraph(mean_sentiment_score_text, data_style), Spacer(1, 12))
+    )
     # Mean Sentiment Class
     mean_sentiment_class_text = f"Mean Sentiment Class: {data['mean_sentiment_class']}"
     flowables.append(Paragraph(mean_sentiment_class_text, data_style))
-    
+
     return flowables
 
 

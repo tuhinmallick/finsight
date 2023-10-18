@@ -126,12 +126,13 @@ def get_query_engine(engine):
             query_engine=engine,
             metadata=ToolMetadata(
                 name="Annual Report",
-                description=f"Provides information about the company from its annual report.",
+                description="Provides information about the company from its annual report.",
             ),
-        ),
+        )
     ]
-    s_engine = SubQuestionQueryEngine.from_defaults(query_engine_tools=query_engine_tools)
-    return s_engine
+    return SubQuestionQueryEngine.from_defaults(
+        query_engine_tools=query_engine_tools
+    )
 
 
 for insight in fiscal_year_attributes:

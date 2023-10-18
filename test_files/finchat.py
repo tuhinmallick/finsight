@@ -42,7 +42,7 @@ if __name__ == "__main__":
             st.session_state.conversation = None
 
     st.divider()
-    
+
     model = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model_name="gpt-3.5-turbo")
 
     if "process_pdf" not in st.session_state:
@@ -61,6 +61,5 @@ if __name__ == "__main__":
                                                                             memory=st.session_state.memory)
 
     if st.session_state.process_pdf:
-        query = st.chat_input("Ask a question")
-        if query:
+        if query := st.chat_input("Ask a question"):
             handle_query(query)

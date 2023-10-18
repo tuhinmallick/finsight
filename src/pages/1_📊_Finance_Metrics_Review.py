@@ -13,7 +13,7 @@ st.title(":chart_with_upwards_trend: Finance Metrics Review")
 st.info("""
 Simply input the ticker symbol of your desired company and hit the 'Generate Insights' button. Allow a few moments for the system to compile the data and insights tailored to the selected company. Once done, you have the option to browse through these insights directly on the platform or download a comprehensive report by selecting 'Generate PDF', followed by 'Download PDF'.
 """)
-        
+
 
 from src.income_statement import income_statement
 from src.balance_sheet import balance_sheet
@@ -24,15 +24,9 @@ from src.utils import round_numeric, format_currency, create_donut_chart, create
 from src.pdf_gen import gen_pdf
 from src.fields2 import inc_stat, inc_stat_attributes, bal_sheet, balance_sheet_attributes, cashflow, cashflow_attributes
 
-OPENAI_API_KEY = st.sidebar.text_input("Enter OpenAI API key", type="password")
-
-
-
-if not OPENAI_API_KEY:
-    st.error("Please enter your OpenAI API Key")
-else:
-
-
+if OPENAI_API_KEY := st.sidebar.text_input(
+    "Enter OpenAI API key", type="password"
+):
     col1, col2 = st.columns([0.25, 0.75], gap="medium")
 
     with col1:
@@ -84,7 +78,7 @@ else:
         for insight in cashflow_attributes:
             if insight not in st.session_state:
                 st.session_state[insight] = None
- 
+
 
         if "company_overview" not in st.session_state:
             st.session_state.company_overview = None
@@ -113,8 +107,8 @@ else:
                     if not st.session_state.company_overview:
                         st.write("Getting company overview...")
                         st.session_state.company_overview = company_overview(ticker)
-                        
-                    
+
+
                     if any(income_statement_feature_list):
                         st.write("Generating income statement insights...")
                         for i, insight in enumerate(inc_stat_attributes):
@@ -124,11 +118,11 @@ else:
                         response = income_statement(ticker, income_statement_feature_list, OPENAI_API_KEY)
 
                         st.session_state.income_statement = response
-                        
+
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
-                    
-                    
+
+
                     if any(balance_sheet_feature_list):
                         st.write("Generating balance sheet insights...")
                         for i, insight in enumerate(balance_sheet_attributes):
@@ -141,15 +135,15 @@ else:
 
                         for key, value in response["insights"].items():
                             st.session_state[key] = value
-                    
-                    
+
+
                     if any(cash_flow_feature_list):
                         st.write("Generating cash flow insights...")
                         for i, insight in enumerate(cashflow_attributes):
                             if st.session_state[insight]:
                                    cash_flow_feature_list[i] = False
 
-                        
+
 
                         response = cash_flow(ticker, cash_flow_feature_list, OPENAI_API_KEY)
 
@@ -165,8 +159,8 @@ else:
                     if st.session_state.company_overview and st.session_state.income_statement and st.session_state.balance_sheet and st.session_state.cash_flow and st.session_state.news:
                         st.session_state.all_outputs = True
 
-                    if st.session_state.company_overview == None:
-                        st.error(f"No Data available")
+                    if st.session_state.company_overview is None:
+                        st.error("No Data available")
 
         if st.session_state.all_outputs:
             st.toast("Insights successfully Generated!")
@@ -186,7 +180,7 @@ else:
                         mime="application/pdf"
                     )
 
-            
+
 
         tab1, tab2, tab3, tab4, tab5 = st.tabs(["Company Overview", "Income Statement", "Balance Sheet", "Cash Flow", "News Sentiment"])
 
@@ -194,7 +188,7 @@ else:
         if st.session_state.company_overview:
             with tab1:
                 with st.container():
-                    
+
                     st.write("# Company Overview")
                     # st.markdown("### Company Name:")
                     st.markdown(f"""### {st.session_state.company_overview["Name"]}""")
@@ -214,7 +208,7 @@ else:
                     col3.write()
                     st.markdown("### Description:")
                     st.write(st.session_state.company_overview["Description"])
-                    
+
                     col1, col2, col3 = st.columns(3)
                     col1.markdown("### Country:")
                     col1.write(st.session_state.company_overview["Country"])
@@ -234,7 +228,7 @@ else:
         if st.session_state.income_statement:
 
             with tab2:
-                
+
                 st.write("# Income Statement")
                 st.write("## Metrics")
 
@@ -248,11 +242,11 @@ else:
                     col1.metric("Cost Efficiency", round_numeric(st.session_state.income_statement["metrics"]["cost_efficiency"], 2))
                     col2.metric("SG&A Efficiency", round_numeric(st.session_state.income_statement["metrics"]["sg_and_a_efficiency"], 2))
                     col3.metric("Interest Coverage Ratio", round_numeric(st.session_state.income_statement["metrics"]["interest_coverage_ratio"], 2))
-            
-                
+
+
                 st.write("## Insights")
 
-                
+
                 if revenue_health:
                     if st.session_state["revenue_health"]:
                         st.write("### Revenue Health")
@@ -263,7 +257,7 @@ else:
                         st.write(total_revenue_chart)
                     else:
                         st.error("Revenue Health insight has not been generated")
-            
+
 
                 if operational_efficiency:
                     if st.session_state["operational_efficiency"]:
@@ -271,17 +265,17 @@ else:
                         st.write(st.session_state["operational_efficiency"])
                     else:
                         st.error("Operational Efficiency insight has not been generated")
-                
-                
+
+
                 if r_and_d_focus:
                     if st.session_state["r_and_d_focus"]:
                         st.write("### R&D Focus")
                         st.write(st.session_state["r_and_d_focus"])
                     else:
                         st.error("R&D Focus insight has not been generated")
-               
 
-                
+
+
                 if debt_management:
                     if st.session_state["debt_management"]:
                         st.write("### Debt Management")
@@ -292,10 +286,10 @@ else:
                         st.write(interest_expense_chart)
                     else:
                         st.error("Debt Management insight has not been generated")
-                    
-                
 
-                
+
+
+
                 if profit_retention:
                     if st.session_state["profit_retention"]:
                         st.write("### Profit Retention")
@@ -306,12 +300,12 @@ else:
                         st.write(net_income_chart)
                     else:
                         st.error("Profit Retention insight has not been generated")
-                
+
 
 
         if st.session_state.balance_sheet:
             with tab3:
-                
+
                 st.write("# Balance Sheet")
                 st.write("## Metrics")
 
@@ -329,7 +323,7 @@ else:
 
                 st.write("## Insights")
 
-                
+
                 if liquidity_position:
                     if st.session_state['liquidity_position']:
                         st.write("### Liquidity Position")
@@ -347,7 +341,7 @@ else:
                     else:
                         st.error("Assets Efficiency insight has not been generated")
 
-                
+
                 if capital_structure:
                     if st.session_state['capital_structure']:
                         st.write("### Capital Structure")
@@ -356,7 +350,7 @@ else:
                         st.write(liabilities_comp_chart)
                     else:
                         st.error("Capital Structure insight has not been generated")
-                   
+
 
                 if inventory_management:
                     if st.session_state['inventory_management']:
@@ -373,11 +367,11 @@ else:
                         st.write(liabilities_comp_chart)
                     else:
                         st.error("Overall Solvency insight has not been generated")
-            
+
 
         if st.session_state.cash_flow:
             with tab4:
-                    
+
                 st.write("# Cash Flow")
                 st.write("## Metrics")
 
@@ -389,9 +383,9 @@ else:
                     col2.metric("Capital Expenditure Coverage Ratio", round_numeric(st.session_state.cash_flow['metrics']['capital_expenditure_coverage_ratio'], 2))
                     col3.metric("Dividend Coverage Ratio", round_numeric(st.session_state.cash_flow['metrics']['dividend_coverage_ratio'], 2))
                     col1.metric("Cash Flow to Debt Ratio", round_numeric(st.session_state.cash_flow['metrics']['cash_flow_to_debt_ratio'], 2))
-                    
+
                     col2.metric("Free Cash Flow", format_currency(st.session_state.cash_flow['metrics']['free_cash_flow']))
-                    
+
 
                 if operational_cash_efficiency:
                     if st.session_state["operational_cash_efficiency"]:
@@ -416,7 +410,7 @@ else:
                     else:
                         st.error("Investment Capability insight has not been generated")
 
-                
+
 
                 if financial_flexibility:
                     if st.session_state["financial_flexibility"]:
@@ -447,7 +441,7 @@ else:
 
 
         if st.session_state.news:
-            
+
             with tab5:
                 st.markdown("## Top News")
                 column_config = {
@@ -481,6 +475,9 @@ else:
                 st.metric("Mean Sentiment Score", 
                         value=round_numeric(st.session_state.news["mean_sentiment_score"]), 
                         delta=st.session_state.news["mean_sentiment_class"])
-                
+
                 st.dataframe(st.session_state.news["news"], column_config=column_config)
+
+else:
+    st.error("Please enter your OpenAI API Key")
 
