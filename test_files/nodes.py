@@ -9,10 +9,7 @@ pdfs = st.file_uploader("pdf file")
 docs = []
 for pdf in [pdfs]:
         file = PdfReader(pdf)
-        text = ""
-        for page in file.pages:
-            text += str(page.extract_text())
-        
+        text = "".join(str(page.extract_text()) for page in file.pages)
         docs.append(Document(text=text))
 
 # nodes = node_parser.get_nodes_from_documents(docs, show_progress=False)

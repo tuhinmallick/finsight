@@ -59,9 +59,7 @@ def create_plotly_chart_image(data, labels):
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
     temp_file.write(img_bytes)
     temp_file.close()
-    img = Image(temp_file.name, width=5*inch, height=3*inch)
-
-    return img
+    return Image(temp_file.name, width=5*inch, height=3*inch)
 
 def main():
     # Create two charts and get their image paths
@@ -69,9 +67,7 @@ def main():
     # chart2_path = create_plotly_chart_image([5, 3, 4], ["d", "e", "f"])
 
     # Create a list of flowables
-    flowables = []
-    flowables.append(chart1_path)
-
+    flowables = [chart1_path]
     # Create a PDF and add the flowables
     doc = SimpleDocTemplate("out1put.pdf", pagesize=letter)
     doc.build(flowables)

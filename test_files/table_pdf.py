@@ -77,20 +77,14 @@ class RotatedTable(Flowable):
         self.canv.restoreState()
 
 def pdf_news_sentiment(data):
-    flowables = []
-    
     # Section Title
     title = "NEWS SENTIMENT"
     para_title = Paragraph(title, header_style)
-    flowables.append(para_title)
-    flowables.append(Spacer(1, 12))
-
+    flowables = [para_title, Spacer(1, 12)]
     # News DataFrame to Table
     df = data['news'].astype(str)
     table_data = [df.columns.to_list()] + df.values.tolist()
-    flowables.append(RotatedTable(table_data))
-    flowables.append(Spacer(1, 12))
-    
+    flowables.extend((RotatedTable(table_data), Spacer(1, 12)))
     table = Table(table_data, repeatRows=1)  # repeatRows ensures the header is repeated if the table spans multiple pages
     table.hAlign = 'CENTER'
     table.rotate = 90
@@ -107,18 +101,16 @@ def pdf_news_sentiment(data):
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
     ])
     table.setStyle(style)
-    flowables.append(table)
-    flowables.append(Spacer(1, 12))
-
+    flowables.extend((table, Spacer(1, 12)))
     # Mean Sentiment Score
     mean_sentiment_score_text = f"Mean Sentiment Score: {data['mean_sentiment_score']:.2f}"
-    flowables.append(Paragraph(mean_sentiment_score_text, data_style))
-    flowables.append(Spacer(1, 12))
-
+    flowables.extend(
+        (Paragraph(mean_sentiment_score_text, data_style), Spacer(1, 12))
+    )
     # Mean Sentiment Class
     mean_sentiment_class_text = f"Mean Sentiment Class: {data['mean_sentiment_class']}"
     flowables.append(Paragraph(mean_sentiment_class_text, data_style))
-    
+
     return flowables
 
 news = top_news('AAPL', 10)

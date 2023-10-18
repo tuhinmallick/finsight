@@ -16,10 +16,7 @@ def get_income_statement(request_data: IncomeStatementRequest):
     symbol = request_data.symbol
     fields_to_include = request_data.fields_to_include
 
-    # Call the income_statement function to retrieve data
-    income_statement_data = income_statement(symbol, fields_to_include)
-
-    return income_statement_data  # Return the data as a response
+    return income_statement(symbol, fields_to_include)
 
 if __name__ == "main":
     uvicorn.run(app, host="0.0.0.0", port=8000)

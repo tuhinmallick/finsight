@@ -51,29 +51,21 @@ def get_model(model_name, api_key):
 
 def process_pdf(pdfs):
     docs = []
-    
+
     for pdf in pdfs:
         file = PdfReader(pdf)
-        text = ""
-        for page in file.pages:
-            text += str(page.extract_text())
-        # docs.append(Document(TextNode(text)))
+        text = "".join(str(page.extract_text()) for page in file.pages)
+            # docs.append(Document(TextNode(text)))
 
     text_splitter = CharacterTextSplitter(separator="\n",
     chunk_size=2000,
     chunk_overlap=300,
     length_function=len)
-    docs = text_splitter.split_documents(docs)
-    # docs = text_splitter.split_text(text)
-
-    return docs
+    return text_splitter.split_documents(docs)
 
 def process_pdf2(pdf):
     file = PdfReader(pdf)
-    text = ""
-    for page in file.pages:
-        text += str(page.extract_text())
-        
+    text = "".join(str(page.extract_text()) for page in file.pages)
     doc = Document(text=text)
     return [doc]
 
@@ -85,9 +77,7 @@ def faiss_db(splitted_text):
     return db
 
 def safe_float(value):
-        if value == "None" or value == None:
-            return "N/A"
-        return float(value)
+    return "N/A" if value == "None" or value is None else float(value)
 
 def round_numeric(value, decimal_places=2):
     if isinstance(value, (int, float)):
@@ -118,9 +108,7 @@ def get_total_revenue(symbol):
     }
     response = requests.get(url, params=params)
     data = response.json()
-    total_revenue = safe_float(data["annualReports"][0]["totalRevenue"])
-
-    return total_revenue
+    return safe_float(data["annualReports"][0]["totalRevenue"])
 
 def get_total_debt(symbol):
     time.sleep(3)
@@ -147,11 +135,11 @@ def generate_pydantic_model(fields_to_include, attributes, base_fields):
 
 def insights(insight_name, type_of_data, data, output_format, api_key):
     print(type_of_data)
-    
+
     with open("prompts/iv2.prompt", "r") as f:
         template = f.read()
 
-    
+
     prompt = PromptTemplate(
         template=template,
         input_variables=["insight_name","type_of_data","inputs", "output_format"],
@@ -170,8 +158,7 @@ def insights(insight_name, type_of_data, data, output_format, api_key):
     print("-"*30)
 
 
-    response = model.predict(formatted_input)
-    return response
+    return model.predict(formatted_input)
 
     
 

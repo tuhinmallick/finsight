@@ -20,10 +20,8 @@ def classify_sentiment(mean_score):
         return "Neutral"
     elif 0.15 <= mean_score < 0.35:
         return "Somewhat_Bullish"
-    elif mean_score >= 0.35:
-        return "Bullish"
     else:
-        return "Undefined"
+        return "Bullish"
 
 def top_news(symbol, max_feed):
 
@@ -52,16 +50,7 @@ def top_news(symbol, max_feed):
 
         try:
             for i in data["feed"][:max_feed]:
-                temp = {}
-                temp["title"] = i["title"]
-                temp["url"] = i["url"]
-                temp["authors"] = i["authors"]
-
-                topics = []
-                for j in i["topics"]:
-                    topics.append(j["topic"])
-                temp["topics"] = topics
-
+                topics = [j["topic"] for j in i["topics"]]
                 sentiment_score = ""
                 sentiment_label = ""
                 for j in i["ticker_sentiment"]:
@@ -69,15 +58,20 @@ def top_news(symbol, max_feed):
                         sentiment_score = j["ticker_sentiment_score"]
                         sentiment_label = j["ticker_sentiment_label"]
                         break
-                temp["sentiment_score"] = sentiment_score
-                temp["sentiment_label"] = sentiment_label
-
+                temp = {
+                    "title": i["title"],
+                    "url": i["url"],
+                    "authors": i["authors"],
+                    "topics": topics,
+                    "sentiment_score": sentiment_score,
+                    "sentiment_label": sentiment_label,
+                }
                 news.append(temp)
 
         except Exception as e:
             print(e)
             return None
-        
+
     else:
         print(f"Error: {response.status_code} - {response.text}")
 

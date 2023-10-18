@@ -31,9 +31,9 @@ def get_all_company_names():
     company_names = []
     with open("data/ticker_symbols/ticker_symbols.csv", 'r') as csvfile:
         reader = csv.DictReader(csvfile)
-        for row in reader:
-            if row['Type'] == "Common Stock":
-                company_names.append(row['Name'])
+        company_names.extend(
+            row['Name'] for row in reader if row['Type'] == "Common Stock"
+        )
     return tuple(company_names)
 
 # Example usage:
